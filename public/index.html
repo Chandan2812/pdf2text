@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Text Extractor</title>
+</head>
+<body>
+    <h1>PDF Text Extractor</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="pdfFile" name="pdf" accept="application/pdf" required>
+        <button type="submit">Upload and Extract Text</button>
+    </form>
+    <h2>Extracted Text:</h2>
+    <pre id="extractedText"></pre>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('pdfFile');
+            formData.append('pdf', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const result = await response.json();
+                document.getElementById('extractedText').innerText = result.text;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('extractedText').innerText = 'Error extracting text from PDF: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
